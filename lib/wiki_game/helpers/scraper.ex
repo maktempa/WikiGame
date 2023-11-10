@@ -121,6 +121,18 @@ defmodule WikiGame.Scraper do
         _ -> false
         end)
 
+    process_urls(url, urls, end_url, path)
+  end
+
+  @spec parse_link(binary() | URI.t()) :: {:error, binary()} | {:ok, nil | binary()}
+  def parse_link(link) do
+    case URI.parse(link) do
+      %URI{:host => @host, :path => path} -> {:ok, path}
+      _rest -> {:error, "incorrect url!"}
+    end
+  end
+
+  defp process_urls(url, urls, end_url, path) do
     cond do
       :ets.lookup(@previous_links, url) != [] ->
         Enum.reverse([end_url, url | path])
@@ -154,14 +166,6 @@ defmodule WikiGame.Scraper do
         end
     end
   end
-
-  def parse_link(link) do
-    case URI.parse(link) do
-      %URI{:host => @host, :path => path} -> {:ok, path}
-      _rest -> {:error, "incorrect url!"}
-    end
-  end
-
   defp http_client, do: Application.get_env(:wiki_game, :http_client, WikiGame.Scraper)
 
   defp prev_links_extractor, do: Application.get_env(:wiki_game, :prev_link_extractor, WikiGame.Scraper)
