@@ -54,7 +54,7 @@ defmodule WikiGame.MixProject do
       {:finch, "~> 0.8"},
       {:mox, "~> 1.1.0", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.2", only: [:dev], runtime: false}
     ]
   end
 

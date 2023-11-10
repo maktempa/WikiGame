@@ -51,6 +51,7 @@ defmodule WikiGame.Scraper do
 
   def save_links2page(page) do
     start_cache(@previous_links, :set)
+
     page
     |> prev_links_extractor().get_links2page()
     |> Enum.each(&:ets.insert(@previous_links, {&1}))
@@ -61,27 +62,31 @@ defmodule WikiGame.Scraper do
   @spec get_links2page(binary(), list()) :: list()
   def get_links2page(page, prevlinks \\ []) do
     doc = get_page(page)
-    next_link = doc
-    |> Floki.find(".mw-nextlink")
-    |> List.first()
-    |> case do
-      {_, _, _} = next -> Floki.attribute(next, "href")
-      _ -> []
-    end
+
+    next_link =
+      doc
+      |> Floki.find(".mw-nextlink")
+      |> List.first()
+      |> case do
+        {_, _, _} = next -> Floki.attribute(next, "href")
+        _ -> []
+      end
 
     links = Floki.find(doc, "#mw-whatlinkshere-list a")
 
-    urls = links
-    |> Enum.map(&List.first(Floki.attribute(&1, "href")))
-    |> Enum.uniq()
-    |> Enum.filter(fn
+    urls =
+      links
+      |> Enum.map(&List.first(Floki.attribute(&1, "href")))
+      |> Enum.uniq()
+      |> Enum.filter(fn
         href when is_binary(href) -> String.contains?(href, "/wiki/")
         _ -> false
-        end)
+      end)
+
     all_urls = List.flatten(urls, prevlinks)
 
     case next_link do
-      [next |_ ] -> get_links2page(next, all_urls)
+      [next | _] -> get_links2page(next, all_urls)
       _ -> all_urls
     end
   end
@@ -96,6 +101,7 @@ defmodule WikiGame.Scraper do
           | {:error, %{:__exception__ => true, :__struct__ => atom(), optional(atom()) => any()}}
   def get_page(path) do
     url = "#{@scheme}#{@host}#{path}"
+
     http_client().request(:get, url)
     |> handle_response()
   end
@@ -109,17 +115,19 @@ defmodule WikiGame.Scraper do
   end
 
   defp find_path_helper(url, url, _path), do: [url]
+
   defp find_path_helper(url, end_url, path) do
     doc = get_page(url)
     links = Floki.find(doc, "#bodyContent a")
 
-    urls = links
-    |> Enum.map(&List.first(Floki.attribute(&1, "href")))
-    |> Enum.uniq()
-    |> Enum.filter(fn
+    urls =
+      links
+      |> Enum.map(&List.first(Floki.attribute(&1, "href")))
+      |> Enum.uniq()
+      |> Enum.filter(fn
         href when is_binary(href) -> String.contains?(href, "/wiki/")
         _ -> false
-        end)
+      end)
 
     process_urls(url, urls, end_url, path)
   end
@@ -166,10 +174,11 @@ defmodule WikiGame.Scraper do
         end
     end
   end
+
   defp http_client, do: Application.get_env(:wiki_game, :http_client, WikiGame.Scraper)
 
-  defp prev_links_extractor, do: Application.get_env(:wiki_game, :prev_link_extractor, WikiGame.Scraper)
-
+  defp prev_links_extractor,
+    do: Application.get_env(:wiki_game, :prev_link_extractor, WikiGame.Scraper)
 
   defp handle_response({:ok, %Finch.Response{body: body}}) do
     {:ok, doc} = Floki.parse_document(body)

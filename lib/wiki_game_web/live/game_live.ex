@@ -17,7 +17,7 @@ defmodule WikiGameWeb.GameLive do
           socket
 
         {:error, error} ->
-          assign(socket, [error: error, route: nil])
+          assign(socket, error: error, route: nil)
       end
 
     {:noreply, assign(socket, :route, nil)}

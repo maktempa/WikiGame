@@ -8,7 +8,7 @@
 import Config
 
 # config :wiki_game,
-  # ecto_repos: [WikiGame.Repo]
+# ecto_repos: [WikiGame.Repo]
 
 # Configures the endpoint
 config :wiki_game, WikiGameWeb.Endpoint,

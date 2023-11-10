@@ -19,7 +19,6 @@ defmodule WikiGameWeb.Router do
 
     # get "/", PageController, :index
     live "/", GameLive, :index
-
   end
 
   # Other scopes may use custom stacks.

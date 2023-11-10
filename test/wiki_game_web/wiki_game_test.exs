@@ -6,9 +6,10 @@ defmodule WikiGame.ScraperTest do
   alias WikiGame.Scraper
 
   setup :verify_on_exit!
+
   setup do
-    expected_content =
-    %{:ec1 => """
+    expected_content = %{
+      :ec1 => """
         <html>
           <body>
             <div id="bodyContent">
@@ -18,7 +19,6 @@ defmodule WikiGame.ScraperTest do
           </body>
         </html>
       """,
-
       :ec2 => """
         <html>
           <body>
@@ -87,8 +87,7 @@ defmodule WikiGame.ScraperTest do
             </div>
           </body>
         </html>
-      """,
-
+      """
     }
 
     {:ok, ec: expected_content}
@@ -134,12 +133,12 @@ defmodule WikiGame.ScraperTest do
     path = Scraper.find_path(start_url, end_url)
 
     assert path ==
-      [
-        "https://en.wikipedia.org/wiki/Page0",
-        "https://en.wikipedia.org/wiki/Page1",
-        "https://en.wikipedia.org/wiki/Page101",
-        "https://en.wikipedia.org/wiki/TargetPage"
-      ]
+             [
+               "https://en.wikipedia.org/wiki/Page0",
+               "https://en.wikipedia.org/wiki/Page1",
+               "https://en.wikipedia.org/wiki/Page101",
+               "https://en.wikipedia.org/wiki/TargetPage"
+             ]
   end
 
   test "find_path returns correct path when target page is on 3nd level of link trees", context do
@@ -157,13 +156,13 @@ defmodule WikiGame.ScraperTest do
     path = Scraper.find_path(start_url, end_url)
 
     assert path ==
-      [
-        "https://en.wikipedia.org/wiki/Page0",
-        "https://en.wikipedia.org/wiki/Page1",
-        "https://en.wikipedia.org/wiki/Page5",
-        "https://en.wikipedia.org/wiki/Page101",
-        "https://en.wikipedia.org/wiki/TargetPage"
-      ]
+             [
+               "https://en.wikipedia.org/wiki/Page0",
+               "https://en.wikipedia.org/wiki/Page1",
+               "https://en.wikipedia.org/wiki/Page5",
+               "https://en.wikipedia.org/wiki/Page101",
+               "https://en.wikipedia.org/wiki/TargetPage"
+             ]
   end
 
   test "find_path returns empty path when target page belongs to non-wiki link", context do
